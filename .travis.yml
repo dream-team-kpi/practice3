@@ -7,4 +7,5 @@ install:
   - pip install pycodestyle
 
 script:
-  - pycodestyle chat.py --ignore=E501
+  - pycodestyle chat.py chat_test.py --ignore=E501
+  - nosetests
