@@ -7,4 +7,4 @@ install:
   - pip install pycodestyle
 
 script:
-  - pycodestyle chat.py
+  - pycodestyle chat.py --ignore=E501

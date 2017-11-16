@@ -69,7 +69,7 @@ class Server:
 
         try:
             self.run(server_sockets)
-        except:
+        except RuntimeError:
             self.print_error("Fatal exception")
             raise
 
