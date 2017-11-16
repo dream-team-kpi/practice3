@@ -1,14 +1,59 @@
 import re
+import os
 import sys
 import time
 import socket
 import select
+import string
+import tempfile
 
 from git import Repo
 from optparse import OptionParser
 
 
 VERSION = Repo(search_parent_directories=True).git.describe()
+
+
+def lower(s):
+    return s.translate(str.maketrans(string.ascii_lowercase.upper() + "[]\\^", string.ascii_lowercase + "{}|~"))
+
+
+class Channel(object):
+
+    def __init__(self, server, name):
+        self.server = server
+        self.name = name
+        self.clients = set()
+        self._topic = ""
+        self._key = None
+
+    def add_member(self, client):
+        self.clients.add(client)
+
+    def get_topic(self):
+        return self._topic
+
+    def set_topic(self, value):
+        self._topic = value
+
+    topic = property(get_topic, set_topic)
+
+    def get_key(self):
+        return self._key
+
+    def set_key(self, value):
+        self._key = value
+
+    key = property(get_key, set_key)
+
+    def remove_client(self, client):
+        self.clients.discard(client)
+        if not self.clients:
+            self.server.remove_channel(self)
+
+
+
+
 
 
 class Client:
@@ -36,6 +81,20 @@ class Server:
 
         server_name_limit = 63
         self.name = socket.getfqdn(self.address)[:server_name_limit]
+
+    def has_channel(self, name):
+        return lower(name) in self.channels
+
+    def get_channel(self, channel_name):
+        if lower(channel_name) in self.channels:
+            channel = self.channels[lower(channel_name)]
+        else:
+            channel = Channel(self, channel_name)
+            self.channels[lower(channel_name)] = channel
+        return channel
+
+    def remove_channel(self, channel):
+        del self.channels[lower(channel.name)]
 
     def print_info(self, msg):
         if self.verbose:
@@ -133,4 +192,5 @@ def main(argv):
         server.print_error("Interrupted.")
 
 
-main(sys.argv)
+if __name__ == "__main__":
+    main(sys.argv)
