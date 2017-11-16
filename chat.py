@@ -1,9 +1,12 @@
+import re
 import sys
 import time
 import socket
 import select
 
 from git import Repo
+from optparse import OptionParser
+
 
 VERSION = Repo(search_parent_directories=True).git.describe()
 
@@ -17,16 +20,22 @@ class Client:
 
 class Server:
 
-    def __init__(self):
-        self.ports = [8888]
+    def __init__(self, options):
         self.channels = {}
         self.clients = {}
         self.nicknames = {}
 
-        self.verbose = True
-        self.debug = True
+        self.ports = options.ports
+        self.verbose = options.verbose
+        self.debug = options.debug
 
-        self.address = socket.gethostbyname("127.0.0.1")
+        if options.listen:
+            self.address = socket.gethostbyname(options.listen)
+        else:
+            self.address = ""
+
+        server_name_limit = 63
+        self.name = socket.getfqdn(self.address)[:server_name_limit]
 
     def print_info(self, msg):
         if self.verbose:
@@ -97,8 +106,27 @@ class Server:
 
 
 def main(argv):
-    print(VERSION)
-    server = Server()
+    op = OptionParser(version=VERSION, description="Simple IRC chat server.")
+    op.add_option("--debug", action="store_true", help="print debug messages to stdout")
+    op.add_option("--verbose", action="store_true", help="be verbose (print some progress messages to stdout)")
+    op.add_option("--listen", metavar="X", help="listen on specific IP address X")
+    op.add_option("--ports", metavar="X", help="listen to ports X (a list separated by comma or whitespace)")
+    (options, args) = op.parse_args(argv[1:])
+
+    if options.debug:
+        options.verbose = True
+    if options.ports is None:
+        options.ports = "8888"
+
+    ports = []
+    for port in re.split(r"[,\s]+", options.ports):
+        try:
+            ports.append(int(port))
+        except ValueError:
+            op.error("Bad port: %r" % port)
+    options.ports = ports
+
+    server = Server(options)
     try:
         server.start()
     except KeyboardInterrupt:
