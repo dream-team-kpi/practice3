@@ -1,7 +1,9 @@
-# Інтеграційні програмні системи
+﻿# Інтеграційні програмні системи
 #### Практична робота №3
 Системи автоматизації збірки, автоматичні тести, рецензування коду та безперервна інтеграція. Робота присвячена організації процесу розробки у репозиторії.
 
+## Build status
+[![Build Status](https://travis-ci.org/dream-team-kpi/practice3.svg?branch=master)](https://travis-ci.org/dream-team-kpi/practice3)
 
 ## Опис
 В рамках лабораторної роботи було написано невеликий сервер для чату, використовуючи Python. Встановлення просте; конфігурації не потрібно.
@@ -40,4 +42,3 @@ MIT License
 * Махров Антон
 * Чайковський Олександр
 
-[![Build Status](https://travis-ci.org/dream-team-kpi/practice3.svg?branch=master)](https://travis-ci.org/dream-team-kpi/practice3)
