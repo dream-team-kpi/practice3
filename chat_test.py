@@ -48,6 +48,7 @@ class ServerMock:
         self.expect(nick, r":local\S+ 251 %s :.*" % nick)
         self.expect(nick, r":local\S+ 422 %s :.*" % nick)
 
+
 def test_some_random_staff():
     server = ServerMock()
     assert_true(True, "It is not true")
