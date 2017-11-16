@@ -3,6 +3,10 @@ import time
 import socket
 import select
 
+from git import Repo
+
+VERSION = Repo(search_parent_directories=True).git.describe()
+
 
 class Client:
 
@@ -93,6 +97,7 @@ class Server:
 
 
 def main(argv):
+    print(VERSION)
     server = Server()
     try:
         server.start()
