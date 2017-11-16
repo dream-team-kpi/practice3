@@ -26,27 +26,27 @@ class ServerMock:
     def send(self, name, message):
         self.connections[name].write(message + "\n\r")
         self.connections[name].flush()
-		
+
     def connect(self, nick):
-	    assert_not_in(nick, self.connections)
-		s = socket.socket()
-		tries_left = 100
-		while tries_left > 0:
-		    try:
-			    s.connect(("localhost", SERVER_PORT))
-				break
-			except socket.error:
-			    tries_left -= 1
-				time.sleep(0.01)
-		self.connections[nick] = s.makefile(mode="rw")
-		self.send(nick, "NICK %s" % nick)
-		self.send(nick, "USER %s * * %s" % (nick, nick))
-		self.expect(nick, r":local\S+ 001 %s :.*" % nick)
-		self.expect(nick, r":local\S+ 002 %s :.*" % nick)
-		self.expect(nick, r":local\S+ 003 %s :.*" % nick)
-		self.expect(nick, r":local\S+ 004 %s .*" % nick)
-		self.expect(nick, r":local\S+ 251 %s :.*" % nick)
-		self.expect(nick, r":local\S+ 422 %s :.*" % nick)
+        assert_not_in(nick, self.connections)
+        s = socket.socket()
+        tries_left = 100
+        while tries_left > 0:
+            try:
+                s.connect(("localhost", SERVER_PORT))
+                break
+            except socket.error:
+                tries_left -= 1
+                time.sleep(0.01)
+        self.connections[nick] = s.makefile(mode="rw")
+        self.send(nick, "NICK %s" % nick)
+        self.send(nick, "USER %s * * %s" % (nick, nick))
+        self.expect(nick, r":local\S+ 001 %s :.*" % nick)
+        self.expect(nick, r":local\S+ 002 %s :.*" % nick)
+        self.expect(nick, r":local\S+ 003 %s :.*" % nick)
+        self.expect(nick, r":local\S+ 004 %s .*" % nick)
+        self.expect(nick, r":local\S+ 251 %s :.*" % nick)
+        self.expect(nick, r":local\S+ 422 %s :.*" % nick)
 
 def test_some_random_staff():
     server = ServerMock()
