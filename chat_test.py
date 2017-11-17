@@ -66,7 +66,22 @@ class ServerFixture:
             assert_true(False, "Regexp %r didn't match %r" % (regexp, line))
 
 
-def test_some_random_staff():
-    server = ServerMock()
-    assert_true(True, "It is not true")
-    assert_not_in(server, [], "Server is in container")
+class TestBasicFunctionality(ServerFixture):
+
+    def test_registration(self):
+        self.connect("john")
+
+    def test_bad_ping(self):
+        self.connect("john")
+        self.send("john", "PING")
+        self.expect("john", r"\S+ 409 apa :.*")
+
+    def test_good_ping(self):
+        self.connect("john")
+        self.send("john", "PING :fisk")
+        self.expect("john", r":local\S+ PONG \S+ :fisk")
+
+    def test_list_users(self):
+        self.connect("john")
+        self.send("john", "lusers")
+        self.expect("john", r":local\S+ 251 apa :There are \d+ users on servers*")
