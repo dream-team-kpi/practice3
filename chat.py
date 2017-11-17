@@ -138,7 +138,7 @@ class Client(object):
         if self.nickname and self.user:
             self.reply("001 %s :Hi, welcome to Chat" % self.nickname)
             self.reply("002 %s :Your host is %s, running version is %s" % (self.nickname, server.name, VERSION))
-            self.reply("004 %s %s chat-%s o o" % (self.nickname, server.name, VERSION))
+            self.reply("003 %s %s chat-%s o o" % (self.nickname, server.name, VERSION))
             self.send_list_users()
             self.__handle_command = self.__command_handler
 
@@ -298,10 +298,10 @@ class Client(object):
             self.server.print_debug("[%s:%d] -> %r" % (self.host, self.port, data))
             quit_message = "EOT"
         except socket.error as x:
-            data = ""
+            data = b""
             quit_message = x
         if data:
-            self.__read_buffer += data
+            self.__read_buffer += data.decode()
             self.__parse_read_buffer()
             self.__timestamp = time.time()
             self.__sent_ping = False
@@ -381,14 +381,16 @@ class Server:
             channel = self.channels[lower(channel_name)]
             channel.remove_client(client)
 
+    def get_client(self, nickname):
+        return self.nicknames.get(lower(nickname))
+
     def remove_client(self, client, quit_message):
-        client.message_related(":%s QUIT :%s" % (client.prefix, quit_message))
         for x in client.channels.values():
             client.channel_log(x, "quit (%s)" % quit_message, meta=True)
             x.remove_client(client)
         if client.nickname and lower(client.nickname) in self.nicknames:
             del self.nicknames[lower(client.nickname)]
-        del self.clients[client.socket]
+        del self.clients[client.connection]
 
     def print_info(self, msg):
         if self.verbose:
@@ -430,7 +432,7 @@ class Server:
         last_aliveness_check = time.time()
 
         while True:
-            (iwtd, owtd, ewtd) = select.select(server_sockets + [x.socket for x in self.clients.values()], [x.socket for x in self.clients.values() if x.write_queue_size() > 0], [], 10)
+            (iwtd, owtd, ewtd) = select.select(server_sockets + [x.connection for x in self.clients.values()], [x.connection for x in self.clients.values() if x.write_queue_size() > 0], [], 10)
             for x in iwtd:
                 if x in self.clients:
                     self.clients[x].socket_readable_notification()

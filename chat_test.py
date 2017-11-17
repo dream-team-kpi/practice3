@@ -3,6 +3,7 @@ import os
 import time
 import signal
 import socket
+import subprocess
 
 from nose.tools import assert_not_in, assert_true
 
@@ -15,8 +16,7 @@ class ServerFixture:
     def setUp(self):
         pid = os.fork()
         if pid == 0:
-            arguments = ["chat.py", "--debug", "--ports=%s" % SERVER_PORT]
-            os.execv("./chat.py", arguments)
+            subprocess.call(["python", "chat.py", "--debug", "--ports=%s" % SERVER_PORT])
         self.child_pid = pid
         self.connections = {}
 
@@ -47,7 +47,6 @@ class ServerFixture:
         self.expect(nick, r":local\S+ 001 %s :.*" % nick)
         self.expect(nick, r":local\S+ 002 %s :.*" % nick)
         self.expect(nick, r":local\S+ 003 %s :.*" % nick)
-        self.expect(nick, r":local\S+ 004 %s .*" % nick)
         self.expect(nick, r":local\S+ 251 %s :.*" % nick)
         self.expect(nick, r":local\S+ 422 %s :.*" % nick)
 
