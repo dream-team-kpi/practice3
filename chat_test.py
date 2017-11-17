@@ -1,5 +1,8 @@
+import re
 import os
+import time
 import signal
+import socket
 
 from nose.tools import assert_not_in, assert_true
 
@@ -7,9 +10,9 @@ from nose.tools import assert_not_in, assert_true
 SERVER_PORT = 12345
 
 
-class ServerMock:
+class ServerFixture:
 
-    def set_up(self):
+    def setUp(self):
         pid = os.fork()
         if pid == 0:
             arguments = ["chat.py", "--debug", "--ports=%s" % SERVER_PORT]
@@ -17,7 +20,7 @@ class ServerMock:
         self.child_pid = pid
         self.connections = {}
 
-    def tear_down(self):
+    def tearDown(self):
         os.kill(self.child_pid, signal.SIGTERM)
         os.waitpid(self.child_pid, 0)
         for connection in self.connections.values():
