@@ -30,6 +30,23 @@ pip install -r requirements.txt
 python chat.py --listen=127.0.0.1 --ports=12345
 ```
 
+## Docker
+This repository also has Docker support. 
+Please, download and install latest Docker version from official site. See https://www.docker.com/
+
+To create a Docker image type the following command in terminal in the root directory of the project:
+```
+docker build -t chat .
+```
+This will build new Docker image with repository name 'chat'.
+
+To run the application type:
+```
+docker run -p 4000:8888 chat
+```
+Also, this command will map port 8888 of container to port 4000 of host.
+
+
 ## Ліцензія
 
 MIT License
