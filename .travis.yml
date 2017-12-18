@@ -1,6 +1,15 @@
 language: python
+sudo: required
+
 python:
   - "3.6"
+
+services:
+  - docker
+
+before_install:
+  - docker build -t chat .
+  - docker image ls
 
 install:
   - pip install -r requirements.txt
