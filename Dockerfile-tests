@@ -1,0 +1,6 @@
+FROM python:3
+WORKDIR /test
+ADD . /test
+RUN pip install --no-cache-dir -r requirements.txt
+CMD ["pycodestyle", "chat.py", "chat_test.py", "--ignore=E501"]
+CMD ["nosetests"]
