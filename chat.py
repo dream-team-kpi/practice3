@@ -5,11 +5,11 @@ import socket
 import select
 import string
 
-from git import Repo
 from optparse import OptionParser
+from setuptools_scm import get_version
 
 
-VERSION = Repo(search_parent_directories=True).git.describe()
+VERSION = get_version()
 
 
 def lower(s):

@@ -1,3 +1,2 @@
 nose
-gitpython
 setuptools_scm
