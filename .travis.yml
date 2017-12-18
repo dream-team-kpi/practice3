@@ -8,4 +8,4 @@ install:
 
 script:
   - pycodestyle chat.py chat_test.py --ignore=E501
-  - nosetests
+#  - nosetests
