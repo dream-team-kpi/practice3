@@ -46,6 +46,11 @@ docker run -p 4000:8888 chat
 ```
 Also, this command will map port 8888 of container to port 4000 of host.
 
+To build and run tests with Docker run the following commands:
+```
+docker build -t chat-tests -f Dockerfile-tests .
+docker run -p 4000:8888 chat-tests
+```
 
 ## Ліцензія
 
